@@ -61,21 +61,6 @@
 
 Разработка/запуск из исходников: `dotnet run --project src\dbtool\dbtool.csproj`.
 
-## Структура проекта
-
-```text
-dbtool/
-├── src/dbtool/        # исходный код
-│   ├── Core/          # журнал событий, общие типы
-│   ├── Providers/     # работа с SQLite/MySQL/PostgreSQL/Access
-│   ├── Converters/    # перенос таблиц между СУБД
-│   └── Forms/         # главное окно, SQL-консоль, диалоги
-├── tests/smoke/         # смоук-тест ядра (dotnet run --project tests/smoke/smoke.csproj)
-├── scripts/             # publish.cmd — сборка портативной версии
-├── .editorconfig
-├── .gitignore
-└── README.md
-```
 
 ## Безопасность
 
