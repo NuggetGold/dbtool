@@ -26,23 +26,25 @@ public class SqlConsoleForm : Form
         Height = 660;
         StartPosition = FormStartPosition.CenterParent;
 
-        var top = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 32, Padding = new Padding(6) };
-        cmbTable = new ComboBox { Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+        var top = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 3, Padding = new Padding(6, 4, 6, 2) };
+        top.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        cmbTable = new ComboBox { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
         cmbTable.SelectedIndexChanged += (_, _) => RebuildTemplates();
-        cmbTemplate = new ComboBox { Width = 300, DropDownStyle = ComboBoxStyle.DropDownList };
+        cmbTemplate = new ComboBox { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
         cmbTemplate.SelectedIndexChanged += (_, _) => ApplyTemplate();
-        cmbHistory = new ComboBox { Width = 300, DropDownStyle = ComboBoxStyle.DropDownList };
+        cmbHistory = new ComboBox { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
         cmbHistory.SelectedIndexChanged += (_, _) =>
         {
             if (cmbHistory.SelectedIndex >= 0)
                 txtSql.Text = history[history.Count - 1 - cmbHistory.SelectedIndex];
         };
-        top.Controls.Add(new Label { Text = "Таблица:", AutoSize = true, Padding = new Padding(0, 4, 0, 0) });
-        top.Controls.Add(cmbTable);
-        top.Controls.Add(new Label { Text = "Шаблон:", AutoSize = true, Padding = new Padding(0, 4, 0, 0) });
-        top.Controls.Add(cmbTemplate);
-        top.Controls.Add(new Label { Text = "История:", AutoSize = true, Padding = new Padding(0, 4, 0, 0) });
-        top.Controls.Add(cmbHistory);
+        top.Controls.Add(new Label { Text = "Таблица:", AutoSize = true, Anchor = AnchorStyles.Left }, 0, 0);
+        top.Controls.Add(cmbTable, 1, 0);
+        top.Controls.Add(new Label { Text = "Шаблон:", AutoSize = true, Anchor = AnchorStyles.Left }, 0, 1);
+        top.Controls.Add(cmbTemplate, 1, 1);
+        top.Controls.Add(new Label { Text = "История:", AutoSize = true, Anchor = AnchorStyles.Left }, 0, 2);
+        top.Controls.Add(cmbHistory, 1, 2);
 
         txtSql = new TextBox
         {
@@ -76,20 +78,21 @@ public class SqlConsoleForm : Form
             BorderStyle = BorderStyle.None
         };
 
-        lbStatus = new Label { Dock = DockStyle.Bottom, Height = 24, Text = string.Empty, Padding = new Padding(6, 2, 0, 0) };
+        lbStatus = new Label { Dock = DockStyle.Fill, Text = string.Empty, Padding = new Padding(6, 2, 0, 0) };
 
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 4, ColumnCount = 1 };
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 5, ColumnCount = 1 };
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 84));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 174));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
         root.Controls.Add(top, 0, 0);
         root.Controls.Add(txtSql, 0, 1);
         root.Controls.Add(tools, 0, 2);
         root.Controls.Add(grid, 0, 3);
+        root.Controls.Add(lbStatus, 0, 4);
 
         Controls.Add(root);
-        Controls.Add(lbStatus);
         KeyPreview = true;
         KeyDown += (_, e) =>
         {

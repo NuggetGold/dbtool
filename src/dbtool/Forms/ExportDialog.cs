@@ -29,8 +29,10 @@ public class ExportDialog : Form
 
         grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
         grid.Controls.Add(new Label { Text = "Куда сохранить:", AutoSize = true, Anchor = AnchorStyles.Left }, 0, 0);
-        var flowPath = new FlowLayoutPanel { Dock = DockStyle.Fill };
-        tbPath = new TextBox { Width = 380, Text = suggestedName };
+        var flowPath = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2 };
+        flowPath.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        flowPath.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 34));
+        tbPath = new TextBox { Dock = DockStyle.Fill, Text = suggestedName };
         var browse = new Button { Text = "…", Width = 34 };
         browse.Click += (_, _) =>
         {
@@ -38,8 +40,9 @@ public class ExportDialog : Form
             if (dlg.ShowDialog(this) == DialogResult.OK)
                 tbPath.Text = dlg.FileName;
         };
-        flowPath.Controls.Add(tbPath);
-        flowPath.Controls.Add(browse);
+        browse.Dock = DockStyle.Fill;
+        flowPath.Controls.Add(tbPath, 0, 0);
+        flowPath.Controls.Add(browse, 1, 0);
         grid.Controls.Add(flowPath, 1, 0);
 
         grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));

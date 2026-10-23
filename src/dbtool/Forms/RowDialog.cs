@@ -24,7 +24,7 @@ public class RowDialog : Form
         MaximizeBox = false;
         MinimizeBox = false;
 
-        var grid = new TableLayoutPanel();
+        var grid = new TableLayoutPanel { Padding = new Padding(6, 6, 6, 0) };
         grid.Dock = DockStyle.Top;
         grid.AutoSize = true;
         grid.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -61,7 +61,7 @@ public class RowDialog : Form
         bottom.Controls.Add(btnCancel);
         bottom.Controls.Add(btnAdd);
 
-        var scroll = new Panel { Dock = DockStyle.Fill, AutoScroll = true };
+        var scroll = new Panel { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(0, 0, 8, 0) };
         scroll.Controls.Add(grid);
 
         Controls.Add(scroll);

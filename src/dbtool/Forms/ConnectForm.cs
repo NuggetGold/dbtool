@@ -33,7 +33,8 @@ public class ConnectForm : Form
         top.Controls.Add(new Label { Text = "Тип базы:", AutoSize = true, Padding = new Padding(0, 6, 0, 0) });
         top.Controls.Add(cmbKind);
 
-        host = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1 };
+        host = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 1 };
+        host.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
         BuildSqlitePanel();
         BuildMySqlPanel();
@@ -67,7 +68,7 @@ public class ConnectForm : Form
     {
         var panel = new TableLayoutPanel
         {
-            Dock = DockStyle.Top,
+            Dock = DockStyle.Fill,
             ColumnCount = 2,
             AutoSize = true,
             Padding = new Padding(8, 24, 8, 8)
@@ -101,9 +102,12 @@ public class ConnectForm : Form
         var box = new TextBox { Dock = DockStyle.Fill };
         var browse = new Button { Text = "…", Width = 32, Dock = DockStyle.Right };
 
-        var flow = new FlowLayoutPanel { Dock = DockStyle.Fill };
-        flow.Controls.Add(box);
-        flow.Controls.Add(browse);
+        var flow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2 };
+        flow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        flow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 32));
+        browse.Dock = DockStyle.Fill;
+        flow.Controls.Add(box, 0, 0);
+        flow.Controls.Add(browse, 1, 0);
 
         browse.Click += (_, _) =>
         {

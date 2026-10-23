@@ -79,8 +79,10 @@ public class MainForm : Form
 
     private void BuildToolbar()
     {
-        var bar = new Panel { Dock = DockStyle.Top, Height = 48 };
-        var flow = new FlowLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(6, 6, 0, 0) };
+        var bar = new TableLayoutPanel { Dock = DockStyle.Top, Height = 76, ColumnCount = 1, RowCount = 2, Padding = new Padding(6, 6, 6, 4) };
+        bar.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
+        bar.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, AutoScroll = true };
 
         btnConnect = new Button { Text = "Подключить…", Width = 126 };
         btnConnect.Click += (_, _) => Connect();
@@ -94,25 +96,25 @@ public class MainForm : Form
         btnFix.Click += (_, _) => FixDatabase();
         lbStatus = new Label { AutoSize = false, Width = 470, Height = 30, TextAlign = ContentAlignment.MiddleLeft };
 
-        foreach (var c in new Control[] { btnConnect, btnDisconnect, btnSql, btnConvert, btnFix, lbStatus })
-            flow.Controls.Add(c);
+        foreach (var c in new Control[] { btnConnect, btnDisconnect, btnSql, btnConvert, btnFix })
+            actions.Controls.Add(c);
 
-        bar.Controls.Add(flow);
+        bar.Controls.Add(actions, 0, 0);
+        bar.Controls.Add(lbStatus, 0, 1);
         Controls.Add(bar);
     }
 
     private void BuildCenter()
     {
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 3, ColumnCount = 1 };
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
+        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 2, ColumnCount = 1 };
         layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 260));
 
         var split = new SplitContainer { Dock = DockStyle.Fill, SplitterDistance = 270 };
         split.Panel1.Controls.Add(BuildTreePanel());
         split.Panel2.Controls.Add(BuildTabs());
-        layout.Controls.Add(split, 0, 1);
-        layout.Controls.Add(BuildLogPanel(), 0, 2);
+        layout.Controls.Add(split, 0, 0);
+        layout.Controls.Add(BuildLogPanel(), 0, 1);
         Controls.Add(layout);
     }
 
@@ -137,11 +139,18 @@ public class MainForm : Form
         tabs = new TabControl { Dock = DockStyle.Fill };
 
         var dataPage = new TabPage("Данные");
-        var dataLayout = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 2, ColumnCount = 1 };
-        dataLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+        var dataLayout = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 4, ColumnCount = 1 };
+        dataLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
+        dataLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
+        dataLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
         dataLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
-        var toolbar = new FlowLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(4, 8, 0, 0) };
+        var toolbar = new FlowLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(4, 4, 4, 0), WrapContents = false, AutoScroll = true };
+        var filterBar = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 4, Padding = new Padding(4, 2, 4, 0) };
+        filterBar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        filterBar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        filterBar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        filterBar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         btnRefresh = new Button { Text = "Обновить", Width = 98, Enabled = false };
         btnRefresh.Click += (_, _) => LoadCurrent();
         btnAdd = new Button { Text = "+ Строка", Width = 96, Enabled = false };
@@ -150,25 +159,26 @@ public class MainForm : Form
         btnDelete.Click += (_, _) => DeleteRow();
         btnCsv = new Button { Text = "Экспорт CSV…", Width = 124, Enabled = false };
         btnCsv.Click += (_, _) => ExportGrid();
-        tbFilter = new TextBox { Width = 300 };
+        tbFilter = new TextBox { Dock = DockStyle.Fill, MinimumSize = new Size(120, 0) };
         tbFilter.KeyDown += (_, e) => { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; ApplyFilter(); } };
         btnApplyFilter = new Button { Text = "Фильтр", Width = 86, Enabled = false };
         btnApplyFilter.Click += (_, _) => ApplyFilter();
         btnClearFilter = new Button { Text = "Сброс", Width = 80, Enabled = false };
         btnClearFilter.Click += (_, _) => { tbFilter.Text = string.Empty; ApplyFilter(); };
-        lbDataInfo = new Label { AutoSize = false, Width = 420, Height = 28,Padding = new Padding(6, 6, 0, 0) };
+        lbDataInfo = new Label { Dock = DockStyle.Fill, AutoEllipsis = true, Padding = new Padding(6, 6, 0, 0) };
 
         toolbar.Controls.Add(btnRefresh);
         toolbar.Controls.Add(btnAdd);
         toolbar.Controls.Add(btnDelete);
         toolbar.Controls.Add(btnCsv);
-        toolbar.Controls.Add(new Label { Text = " WHERE:", AutoSize = true, Padding = new Padding(4, 7, 0, 0) });
-        toolbar.Controls.Add(tbFilter);
-        toolbar.Controls.Add(btnApplyFilter);
-        toolbar.Controls.Add(btnClearFilter);
-        toolbar.Controls.Add(lbDataInfo);
+        filterBar.Controls.Add(new Label { Text = "WHERE:", AutoSize = true, Anchor = AnchorStyles.Left, Padding = new Padding(4, 0, 0, 0) }, 0, 0);
+        filterBar.Controls.Add(tbFilter, 1, 0);
+        filterBar.Controls.Add(btnApplyFilter, 2, 0);
+        filterBar.Controls.Add(btnClearFilter, 3, 0);
 
         dataLayout.Controls.Add(toolbar, 0, 0);
+        dataLayout.Controls.Add(filterBar, 0, 1);
+        dataLayout.Controls.Add(lbDataInfo, 0, 2);
 
         gridData = new DataGridView
         {
@@ -187,7 +197,7 @@ public class MainForm : Form
         gridData.KeyDown += GridKeyDown;
         gridData.ContextMenuStrip = BuildGridMenu();
 
-        dataLayout.Controls.Add(gridData, 0, 1);
+        dataLayout.Controls.Add(gridData, 0, 3);
         dataPage.Controls.Add(dataLayout);
 
         var structurePage = new TabPage("Структура");
@@ -231,7 +241,11 @@ public class MainForm : Form
 
     private Control BuildLogPanel()
     {
-        var panel = new Panel { Dock = DockStyle.Fill };
+        var panel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 2 };
+        panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        panel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 152));
+        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+        panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         logBox = new RichTextBox
         {
             Dock = DockStyle.Fill,
@@ -241,7 +255,7 @@ public class MainForm : Form
             WordWrap = false,
             DetectUrls = false
         };
-        var side = new FlowLayoutPanel { Dock = DockStyle.Right, Width = 152, FlowDirection = FlowDirection.TopDown, Padding = new Padding(4) };
+        var side = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, Padding = new Padding(4) };
         var btnSave = new Button { Text = "Сохранить журнал…", Width = 142 };
         btnSave.Click += (_, _) => SaveLog();
         var btnClear = new Button { Text = "Очистить показ", Width = 142 };
@@ -251,16 +265,14 @@ public class MainForm : Form
 
         var top = new Label
         {
-            Dock = DockStyle.Top,
-            Height = 22,
+            Dock = DockStyle.Fill,
             Text = "Журнал (также пишется в dbtool-log.txt рядом с программой)",
             Padding = new Padding(4, 2, 0, 0)
         };
-        panel.Controls.Add(logBox);
-        panel.Controls.Add(side);
-        panel.Controls.Add(top);
-        logBox.BringToFront();
-        side.BringToFront();
+        panel.Controls.Add(top, 0, 0);
+        panel.SetColumnSpan(top, 2);
+        panel.Controls.Add(logBox, 0, 1);
+        panel.Controls.Add(side, 1, 1);
         return panel;
     }
 
